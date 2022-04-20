@@ -2,6 +2,7 @@ package com.baeldung.lss.spring;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -33,6 +34,18 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
                 inMemoryAuthentication().passwordEncoder(passwordEncoder)
                 .withUser("user").password(passwordEncoder.encode("pass"))
                 .roles("USER");
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests(
+                (requests) -> requests
+                        .antMatchers("/delete/**").hasAnyAuthority("ADMIN")
+                        .anyRequest().authenticated()
+
+        );
+        http.formLogin();
+        http.httpBasic();
     }
 
 }
