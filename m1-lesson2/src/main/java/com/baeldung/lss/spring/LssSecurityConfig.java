@@ -21,7 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public LssSecurityConfig(PasswordEncoder passwordEncoder) {
         super();
@@ -44,8 +44,10 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
                         .anyRequest().authenticated()
 
         );
-        http.formLogin();
-        http.httpBasic();
+
+        http.formLogin()
+                .loginPage("/login").permitAll()
+                .loginProcessingUrl("/doLogin");
     }
 
 }
