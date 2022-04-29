@@ -52,7 +52,7 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
 
         .and()
         .logout().permitAll().logoutUrl("/logout")
-
+                .and().rememberMe()
         .and()
         .csrf().disable()
         ;
