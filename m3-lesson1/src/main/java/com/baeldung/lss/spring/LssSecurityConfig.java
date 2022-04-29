@@ -52,9 +52,15 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
 
         .and()
         .logout().permitAll().logoutUrl("/logout")
+
                 .and().rememberMe()
-        .and()
-        .csrf().disable()
+                .tokenValiditySeconds(605800)
+                .key("lssAppKey")
+//                .useSecureCookie(true)// with local development on http this will not have an effect.
+                .rememberMeCookieName("sticky-cookie")// dont publish default names
+                .rememberMeParameter("remember") // also change this value in the HTML or FE code,
+
+                .and().csrf().disable()
         ;
     } // @formatter:on
 
