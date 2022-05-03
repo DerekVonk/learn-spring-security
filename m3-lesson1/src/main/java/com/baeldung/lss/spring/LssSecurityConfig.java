@@ -1,6 +1,7 @@
 package com.baeldung.lss.spring;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,6 +9,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
+import javax.sql.DataSource;
+import javax.xml.crypto.Data;
 
 @EnableWebSecurity
 @Configuration
@@ -17,6 +23,9 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private DataSource dataSource;
 
     public LssSecurityConfig(PasswordEncoder passwordEncoder) {
         super();
@@ -53,15 +62,23 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
         .logout().permitAll().logoutUrl("/logout")
 
-                .and().rememberMe()
-                .tokenValiditySeconds(605800)
-                .key("lssAppKey")
-//                .useSecureCookie(true)// with local development on http this will not have an effect.
-                .rememberMeCookieName("sticky-cookie")// dont publish default names
-                .rememberMeParameter("remember") // also change this value in the HTML or FE code,
+                .and().rememberMe().tokenRepository(persistentTokenRepository())
+//                # for inMemory persistence of remember me token
+//                .tokenValiditySeconds(605800)
+//                .key("lssAppKey")
+////                .useSecureCookie(true)// with local development on http this will not have an effect.
+//                .rememberMeCookieName("sticky-cookie")// dont publish default names
+//                .rememberMeParameter("remember") // also change this value in the HTML or FE code,
 
                 .and().csrf().disable()
         ;
     } // @formatter:on
+
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        final JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+        jdbcTokenRepository.setDataSource(dataSource);
+        return jdbcTokenRepository;
+    }
 
 }
