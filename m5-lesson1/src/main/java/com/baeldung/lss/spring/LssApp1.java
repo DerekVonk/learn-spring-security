@@ -21,7 +21,7 @@ public class LssApp1 {
     }
 
     public static void main(String[] args) throws Exception {
-        SpringApplication.run(new Class[] { LssApp1.class, LssSecurityConfig.class, LssWebMvcConfiguration.class }, args);
+        SpringApplication.run(new Class[] { LssApp1.class, LssSecurityConfig.class, LssWebMvcConfiguration.class, CustomMethodSecurityConfig.class }, args);
     }
 
 }
