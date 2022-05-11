@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.access.intercept.RunAsImplAuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +27,7 @@ public class LssApp2 {
     }
 
     public static void main(String[] args) throws Exception {
+        SecurityContextHolder.setStrategyName("MODE_INHERITABLETHREADLOCAL");
         SpringApplication.run(new Class[] { LssApp2.class, LssSecurityConfig.class, LssWebMvcConfiguration.class }, args);
     }
 

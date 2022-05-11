@@ -1,27 +1,24 @@
 package com.baeldung.lss.spring;
 
-import javax.annotation.PostConstruct;
-
+import com.baeldung.lss.model.User;
+import com.baeldung.lss.persistence.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.intercept.RunAsImplAuthenticationProvider;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.baeldung.lss.model.User;
-import com.baeldung.lss.persistence.UserRepository;
+import javax.annotation.PostConstruct;
 
 
 @EnableWebSecurity
 @Configuration
+@EnableAsync
 public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -61,20 +58,20 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {// @formatter:off
         http
-        .authorizeRequests()
-                .antMatchers("/badUser*","/js/**").permitAll()
+                .authorizeRequests()
+                .antMatchers("/badUser*", "/js/**").permitAll()
                 .anyRequest().authenticated()
 
-        .and()
-        .formLogin().
-            loginPage("/login").permitAll().
-            loginProcessingUrl("/doLogin")
+                .and()
+                .formLogin().
+                loginPage("/login").permitAll().
+                loginProcessingUrl("/doLogin")
 
-        .and()
-        .logout().permitAll().logoutUrl("/logout")
+                .and()
+                .logout().permitAll().logoutUrl("/logout")
 
-        .and()
-        .csrf().disable()
+                .and()
+                .csrf().disable()
         ;
     } // @formatter:on
 

@@ -20,6 +20,15 @@ class UserService implements IUserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    AsyncBean asyncBean;
+
+    @Override
+    public Iterable<User> findAll() {
+        asyncBean.asyncCall();
+        return userRepository.findAll();
+    }
+
     @Override
     public User registerNewUser(final User user) throws EmailExistsException {
         if (emailExist(user.getEmail())) {
