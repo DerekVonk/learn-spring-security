@@ -3,7 +3,12 @@ package com.baeldung.lss.spring;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.intercept.RunAsImplAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,17 +19,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.baeldung.lss.model.User;
 import com.baeldung.lss.persistence.UserRepository;
 
+
 @EnableWebSecurity
 @Configuration
 public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
     private UserRepository userRepository;
 
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    @Qualifier(value = "daoAuthenticationProvider")
+    private AuthenticationProvider daoAuthenticationProvider;
+
+    @Autowired
+    @Qualifier(value = "runAsAuthenticationProvider")
+    private AuthenticationProvider runAsAuthenticationProvider;
 
     public LssSecurityConfig(PasswordEncoder passwordEncoder) {
         super();
@@ -43,7 +54,8 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {// @formatter:off
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+        auth.authenticationProvider(runAsAuthenticationProvider);
+        auth.authenticationProvider(daoAuthenticationProvider);
     } // @formatter:on
 
     @Override
@@ -65,4 +77,5 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
         .csrf().disable()
         ;
     } // @formatter:on
+
 }
