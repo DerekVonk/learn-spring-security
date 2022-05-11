@@ -2,6 +2,7 @@ package com.baeldung.lss.spring;
 
 import com.baeldung.lss.model.User;
 import com.baeldung.lss.persistence.UserRepository;
+import com.baeldung.lss.security.LssLoggingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 import javax.annotation.PostConstruct;
 
@@ -25,6 +27,9 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserRepository userRepository;
 
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private LssLoggingFilter loggingFilter;
 
     @Autowired
     @Qualifier(value = "daoAuthenticationProvider")
@@ -58,6 +63,7 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {// @formatter:off
         http
+                .addFilterBefore(loggingFilter, AnonymousAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/badUser*", "/js/**").permitAll()
                 .anyRequest().authenticated()
