@@ -7,6 +7,8 @@ import javax.persistence.Id;
 import java.util.Calendar;
 
 import com.baeldung.lss.validation.PasswordMatches;
+import org.jboss.aerogear.security.otp.api.Base32;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
@@ -29,6 +31,13 @@ public class User {
     private String passwordConfirmation;
 
     private Calendar created = Calendar.getInstance();
+
+    private String secret;
+
+    public User() {
+        super();
+        this.secret = Base32.random();
+    }
 
     public Long getId() {
         return this.id;
@@ -70,8 +79,29 @@ public class User {
         this.passwordConfirmation = passwordConfirmation;
     }
 
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
+
     @Override
     public String toString() {
-        return "User{" + "id=" + id + ", email='" + email + '\'' + ", password='" + password + '\'' + ", passwordConfirmation='" + passwordConfirmation + '\'' + ", created=" + created + '}';
-    }
-}
+        final StringBuilder builder = new StringBuilder();
+        builder.append("User [id=")
+                .append(id)
+                .append(", email=")
+                .append(email)
+                .append(", password=")
+                .append(password)
+                .append(", passwordConfirmation=")
+                .append(passwordConfirmation)
+                .append(", created=")
+                .append(created)
+                .append(", secret=")
+                .append(secret)
+                .append("]");
+        return builder.toString();
+    }}

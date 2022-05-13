@@ -38,7 +38,6 @@ class RegistrationController {
             return new ModelAndView("registrationPage", "user", user);
         }
 
-        return new ModelAndView("redirect:/login");
+        return new ModelAndView("qrcode", "user", user);
     }
-
 }
