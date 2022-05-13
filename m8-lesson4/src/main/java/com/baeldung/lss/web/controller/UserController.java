@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import com.baeldung.lss.model.User;
 import com.baeldung.lss.persistence.UserRepository;
+import com.baeldung.lss.service.ActiveUsersService;
 import com.baeldung.lss.service.IUserService;
 import com.baeldung.lss.validation.EmailExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Controller
 @RequestMapping("/user")
 class UserController {
@@ -27,11 +31,13 @@ class UserController {
     @Autowired
     private IUserService userService;
 
-    //
+    @Autowired
+    private ActiveUsersService activeUsersService;
 
     @RequestMapping
     public ModelAndView list() {
-        Iterable<User> users = this.userRepository.findAll();
+        List<String> allActiveUsers = activeUsersService.getAllActiveUsers();
+        Iterable<User> users = allActiveUsers.stream().map(User::new).collect(Collectors.toList());
         return new ModelAndView("tl/list", "users", users);
     }
 

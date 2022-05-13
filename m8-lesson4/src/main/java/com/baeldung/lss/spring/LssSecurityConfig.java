@@ -3,11 +3,14 @@ package com.baeldung.lss.spring;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -17,9 +20,6 @@ import com.baeldung.lss.persistence.UserRepository;
 @EnableWebSecurity
 @Configuration
 public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    // @Autowired
-    // private DataSource dataSource;
 
     @Autowired
     private UserRepository userRepository;
@@ -38,14 +38,6 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {// @formatter:off
-        //        auth.inMemoryAuthentication().
-        //            withUser("test@email.com").password("pass").roles("USER").and().
-        //            withUser("test2@email.com").password("pass2").roles("ADMIN");
-
-        //        auth.
-        //            jdbcAuthentication().dataSource(dataSource). // withDefaultSchema().
-        //            withUser("test@email.com").password("pass").roles("USER");
-
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }// @formatter:on
 
@@ -64,10 +56,17 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
         .logout().permitAll().logoutUrl("/logout")
 
+                .and().sessionManagement().maximumSessions(1).sessionRegistry(sessionRegistry()).and().sessionFixation().none()
+
         .and()
         .csrf().disable()
         ;
     } // @formatter:on
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
 
     @PostConstruct
     private void saveTestUser() {
